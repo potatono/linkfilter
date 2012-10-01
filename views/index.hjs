@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Linkfilter - {{ title }}</title>
+		<link rel='stylesheet' href='/css/bootstrap.min.css' />
+		<link rel='stylesheet' href='/css/style.css' />
+	</head>
+	<body>
+		<div id="window">
+			<div id="main">
+				<div id="nav" class="btn-group">
+					<a id="login" class="btn btn-small pull-right" href="#">Login</a>
+				</div>
+				<div id="feed"></div>
+				<div id="controls">
+					<input id="input" />
+				</div>
+			</div>
+		</div>
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+	</body>
+</html>

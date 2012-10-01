@@ -1,0 +1,19 @@
+exports.app = {
+	url: "http://linkfilter.net/",
+	staticUrl: "http://static.linkfilter.net/",
+	cookieSecret: "your secret"
+};
+
+exports.auth = {
+	facebook: {
+		id: "facebook app id",
+		secret: "facebook app secret",
+		callback: "http://linkfilter.net/auth/callback"
+	},
+
+	twitter: {
+		id: "twitter app key",
+		secret: "twitter app secret"
+	}
+};
+

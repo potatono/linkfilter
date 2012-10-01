@@ -1,0 +1,7 @@
+var exec = require('child_process').exec;
+
+desc('Build everything');
+task('default', [], function(params) {
+	exec("lessc less/style.less ../public/css/style.css");
+	exec("lessc -x less/style.less ../public/css/style.min.css");
+});
