@@ -6,6 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
+  , login = require('./routes/login')
   , http = require('http')
   , path = require('path')
   , auth = require('connect-auth')
@@ -14,7 +15,7 @@ var express = require('express')
 var app = express();
 
 app.configure(function() {
-	app.set('port', process.env.PORT || 3000);
+	app.set('port', process.env.PORT || 80);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'hjs');
 	app.use(express.favicon());
@@ -23,9 +24,6 @@ app.configure(function() {
 	app.use(express.methodOverride());
 	app.use(express.cookieParser(config.app.cookieSecret));
 	app.use(express.session());
-	app.use(app.router);
-	app.use(require('less-middleware')({ src: __dirname + '/public' }));
-	app.use(express.static(path.join(__dirname, 'public')));
 	app.use(auth({
 		strategies: [ 
 			auth.Anonymous(),
@@ -34,6 +32,9 @@ app.configure(function() {
 		],
 		trace: true
 	}));
+	app.use(app.router);
+	app.use(require('less-middleware')({ src: __dirname + '/public' }));
+	app.use(express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('development', function(){
@@ -42,6 +43,9 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/login/facebook', login.facebook);
+app.get('/login/facebook_callback', login.facebookCallback);
+app.get('/login/twitter', login.twitter);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

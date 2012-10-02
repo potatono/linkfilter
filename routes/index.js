@@ -4,6 +4,7 @@
  */
 
 exports.index = function(req, res){
-	console.log(req);
+	console.log(req.isAuthenticated());
+	console.log(req.getAuthDetails());
 	res.render('index', { title: 'Home' });
 };
