@@ -15,7 +15,7 @@ var express = require('express')
 var app = express();
 
 app.configure(function() {
-	app.set('port', process.env.PORT || 80);
+	app.set('port', process.env.PORT || 3000);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'hjs');
 	app.use(express.favicon());
@@ -43,8 +43,9 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/login', login.index);
+app.get('/login/local', login.local);
 app.get('/login/facebook', login.facebook);
-app.get('/login/facebook_callback', login.facebookCallback);
 app.get('/login/twitter', login.twitter);
 
 http.createServer(app).listen(app.get('port'), function(){

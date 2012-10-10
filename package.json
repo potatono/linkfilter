@@ -1,5 +1,5 @@
 {
-  "name": "application-name",
+  "name": "linkfilter",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -8,6 +8,18 @@
   "dependencies": {
     "express": "3.0.0rc4",
     "hjs": "*",
-    "less-middleware": "*"
+    "less-middleware": "*",
+	"connect-auth": "*",
+	"jake": "*",
+	"less": "*",
+	"memcached": "*",
+	"mysql": "*",
+	"npm": "*",
+	"socket.io": "*",
+	"jugglingdb": "*",
+	"nodeunit": "*",
+	"redis": "*",
+	"async": "*",
+	"bcrypt": "*"
   }
 }

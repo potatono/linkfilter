@@ -34,3 +34,7 @@ exports.twitter = function(req, res, next) {
 	}
 };
 
+exports.index = function(req, res){
+	res.render('login', { title: 'Login' });
+};
+

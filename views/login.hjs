@@ -1,0 +1,13 @@
+<div class="row-fluid">
+	<div class="span6">
+		<form method="post" action="/login/local">
+			<input type="text" placeholder="Username" />
+			<input type="password" placeholder="Password" />
+			<button type="submit" class="btn btn-primary">Sign In</button>
+		</form>
+	</div>
+	<div class="span6">
+		<a href="/login/facebook"><img src="/img/fb_login.png" /></a><br />
+		<a href="/login/twitter"><img src="/img/tw_login.png" /></a>
+	</div>
+</div>
