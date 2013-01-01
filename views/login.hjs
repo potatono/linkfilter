@@ -1,9 +1,22 @@
+<style>
+	.popover { z-index: 9999; }
+	h3.popover-title { display: none; }
+</style>
+
 <div class="row-fluid">
 	<div class="span6">
-		<form method="post" action="/login/local">
-			<input type="text" placeholder="Username" />
-			<input type="password" placeholder="Password" />
-			<button type="submit" class="btn btn-primary">Sign In</button>
+		<form id="form" method="post" action="/login/signin">
+			<input type="text" id="username" name="username" placeholder="Username" onblur="checkUnique('username', this, 'No such user', null);" />
+				<div id="signup-email" class="collapse out">
+					<input type="email" id="email" name="email" placeholder="Email" onblur="checkUnique('email', this, null, 'Email is not unique');" />
+				</div>
+
+			<input type="password" id="password" name="password" placeholder="Password" />
+				<div id="signup-password" class="collapse out">
+					<input type="password" id="repeat" name="repeat" placeholder="Repeat Password" onblur="checkPassword(this)" />
+				</div>
+			<button id="signin-btn" type="button" class="btn btn-primary" onclick="signIn()">Sign In</button>
+			<button id="signup-btn" type="button" class="btn" onclick="signUp()">Sign Up</button>
 		</form>
 	</div>
 	<div class="span6">
@@ -11,3 +24,72 @@
 		<a href="/login/twitter"><img src="/img/tw_login.png" /></a>
 	</div>
 </div>
+<script type="text/javascript">
+	function checkUnique(key, ele, yr, nr) {
+		console.log("/login/check-" + key + "/" + escape(ele.value));
+
+		$.getJSON(
+			"/login/check-" + key + "/" + escape(ele.value), 
+
+			function(data) {
+				if (data.unique) {
+					if (yr) {
+						$('#'+key).popover({ 'trigger':'manual', 'content':yr, 'selector':true }).popover('show');
+					}
+					else {
+						$('#'+key).popover('destroy');
+					}
+				}
+				else {
+					if (nr) {
+						$('#'+key).popover({ 'trigger':'manual', 'content':nr, 'selector':true }).popover('show');
+					}
+					else {
+						$('#'+key).popover('destroy');
+					}
+				}
+			}
+		);
+	}
+
+	function checkPassword(ele) {
+		if ($('#password').value != ele.value) {
+			$('#password-error').text('passwords do not match').show();
+		}
+		else {
+			$('#password-error').hide();
+		}
+	}
+
+	function signUp() {
+		if ($('#signup-btn').hasClass('btn-primary')) {
+			$('#form').submit();
+		}
+		else {
+			$('#signup-email').collapse('show');
+			$('#signup-password').collapse('show');
+			$('#form').attr('action','/login/signup');
+			$('#signup-btn').addClass('btn-primary');
+			$('#signin-btn').removeClass('btn-primary');
+			$('#username').attr('onblur',"checkUnique('username', this, null, 'Username is not unique')");
+			checkUnique('username', $('#username').get(0), null, 'Username is not unique');
+			checkUnique('email', $('#email').get(0), null, 'Email is not unique');
+		}
+	}
+
+	function signIn() {
+		if ($('#signin-btn').hasClass('btn-primary')) {
+			$('#form').submit();
+		}
+		else {
+			$('#signup-email').collapse('hide');
+			$('#signup-password').collapse('hide');
+			$('#form').attr('action','/login/signin');
+			$('#signup-btn').removeClass('btn-primary');
+			$('#signin-btn').addClass('btn-primary');
+			$('#username').attr('onblur',"checkUnique('username', this, 'No such user', null)");
+			checkUnique('username', $('#username').get(0), 'No such user', null);
+			$('#email').popover('destroy');
+		}
+	}
+</script>
