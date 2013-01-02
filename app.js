@@ -10,12 +10,22 @@ var config = require('./config')
   , login = require('./routes/login')
   , http = require('http')
   , path = require('path')
-  , auth = require('connect-auth');
+  , auth = require('connect-auth')
+  , io = require('socket.io').listen(8080);
 
 var app = express();
 
+io.sockets.on('connection',function(socket) {
+	socket.on('message', function(data) {
+		console.log("Received");
+		console.log(data);
+		socket.broadcast.emit('message', data);
+	});
+});
+
+
 app.configure(function() {
-	app.set('port', process.env.PORT || 3000);
+	app.set('port', process.env.PORT || config.app.port || 3000);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'hjs');
 	app.use(express.favicon());
@@ -50,6 +60,7 @@ app.get('/login/facebook', login.facebook);
 app.get('/login/twitter', login.twitter);
 app.get('/login/check-username/:username', login.checkUsername);
 app.get('/login/check-email/:email', login.checkEmail);
+app.get('/logout', login.logout);
 
 http.createServer(app).listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));

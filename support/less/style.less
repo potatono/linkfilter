@@ -19,12 +19,37 @@ a {
 	.centered-window();
 	.border-radius(5px);
 	.box-shadow(0,0,3px,#333);
+	overflow:hidden;
+}
+
+#feed {
+	overflow:scroll;
+	position:absolute;
+	height:100%;
+	width:100%;
+
+	.message {
+		min-height: 20px;
+		margin-top: 5px;
+		line-height: 20px;
+
+		.user {
+			background: #cce;
+			padding: 2px 10px 2px 10px;
+			text-align: center;
+			.border-radius(10px);
+		}
+
+		.body {
+			padding: 2px 5px 2px 5px;
+		}
+	}
 }
 
 #login {
 	border-right: none;
 	border-top: none;
-
+	z-index: 1000;
 }
 
 #controls {

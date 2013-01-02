@@ -10,8 +10,16 @@
 			<div id="main">
 				<div id="nav" class="btn-group">
 					<a id="login" class="btn btn-small pull-right" href="/login" data-toggle="modal" data-target="#loginModal">Login</a>
+					<ul class="dropdown-menu pull-right" style="margin-top:25px">
+						<li><a href='#'>Settings</a></li>
+						<li><a href='/logout'>Logout</a></li>
+					</ul>
 				</div>
-				<div id="feed"></div>
+				<div id="feed">
+					<div class="message"><span class="user">linkfilter</span><span class="body">Welcome to linkfilter!</span></div>
+					<div class="message"><span class="user">linkfilter</span><span class="body">Welcome to linkfilter!</span></div>
+					<div class="message"><span class="user">linkfilter</span><span class="body">Welcome to linkfilter!</span></div>
+				</div>
 				<div id="controls">
 					<input id="input" />
 				</div>
@@ -29,5 +37,10 @@
 		</div>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/socket.io.js"></script>
+		<script src="/js/lf.js"></script>
+		<script>
+			LF.setUser({{& user }});
+		</script>
 	</body>
 </html>

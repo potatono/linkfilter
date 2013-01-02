@@ -1,7 +1,7 @@
-var async = require("async"),
+var config = require("../config"),
+	async = require("async"),
 	bcrypt = require("bcrypt"),
-	users = require("../models/users"),
-	accounts = require("../models/external-accounts");
+	users = require("../models/users");
 
 function loginWith(method, req, res, cb) {
 	req.authenticate([method], function(error, authenticated) {
@@ -23,18 +23,14 @@ function facebookAuthenticated(req, res) {
 	var details = req.getAuthDetails();
 	var user = details.user;
 
-	console.log(user);
-
-	console.log("Ensuring user");
-
+	res.redirect(config.app.url);
 }
 
 function twitterAuthenticated(req, res) {
 	var details = req.getAuthDetails();
 	var user = details.user;
 
-	console.log(user);
-
+	res.redirect(config.app.url);
 }
 
 function getUniquenessChecker(key) {
@@ -64,12 +60,9 @@ exports.facebook = function(req, res, next) {
 	console.log("exports.facebook");
 
 	if (req.isAuthenticated()) {
-		console.log("isAuthenticated");
-		//res.redirect(global.config.app.url);
 		facebookAuthenticated(req, res);
 	}
 	else {
-		console.log("loginWith");
 		loginWith("facebook", req, res, next);
 	}
 };
@@ -96,16 +89,43 @@ exports.signup = function(req, res, next) {
 			res.json(400, { 'errors': user.errors });
 		}
 		else {
-			req.session.user = user;
-			res.json(200, user);
+			var auth = { 'scopedUsers': {}, 'user':user };
+			req._connect_auth = auth;
+			req.session.auth = auth;
+			res.redirect(config.app.url);
 		}
 	});
+};
+
+exports.signin = function(req, res, next) {
+	users.signin(
+		req.param('username'),
+		req.param('password'),
+
+		function(err, user) {
+			if (err) {
+				res.json(400, { 'errors': err });
+			}
+			else {
+				var auth = { 'scopedUsers': {}, 'user':user };
+				req._connect_auth = auth;
+				req.session.auth = auth;
+				res.redirect(config.app.url);
+			}
+		}
+	);
 };
 
 exports.checkUsername = getUniquenessChecker('username');
 exports.checkEmail = getUniquenessChecker('email');
 
-exports.index = function(req, res){
+exports.index = function(req, res) {
 	res.render('login', { title: 'Login' });
 };
+
+exports.logout = function(req, res) {
+	req.logout();
+	res.redirect(config.app.url);
+};
+
 

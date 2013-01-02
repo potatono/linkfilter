@@ -22,25 +22,23 @@ users.signin = function(username, password, cb) {
 
 		function(results, cb) {
 			if (!results || results.length == 0) {
-				throw new Error("No users found matching the username " + username);
+				cb("No users found matching the username " + username);
 			}
 			else if (results.length > 1) {
-				throw new Error("Found more than one user matching the username " + username);
+				cb("Found more than one user matching the username " + username);
 			}
 			else {
-				cb(results[0]);
+				cb(null, results[0]);
 			}
 		},
 
 		function(user, cb) {
-			bcrypt.compare(password, user.password, function(err,result) {  cb(err,user,result); });
-		},
-
-		function(user, result, cb) {
-			if (result)
-				cb(user);
-			else
-				throw new Error("Password does not match");
+			bcrypt.compare(password, user.password, function(err,result) { 
+				if (result)
+					cb(null, user);
+				else
+					cb("Password does not match");
+			});
 		}
 	], 
 	

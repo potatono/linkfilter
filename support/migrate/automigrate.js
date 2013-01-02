@@ -1,7 +1,7 @@
 require("../../config");
-var schema = require("linkfilter/model/schema");
-require("linkfilter/model/user");
-require("linkfilter/model/credential");
+var schema = require("../../models/schema");
+require("../../models/users");
+require("../../models/credentials");
 
 schema.automigrate(function() {
 	schema.client.end();

@@ -1,5 +1,5 @@
-var schema = require("linkfilter/model/schema"),
-	users = require("linkfilter/model/users"),
+var schema = require("./schema"),
+	users = require("./users"),
 	bcrypt = require("bcrypt"),
 	async = require("async");
 

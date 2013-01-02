@@ -28,10 +28,34 @@ a {
   box-shadow: 0 0 3px #333333;
   -moz-box-shadow: 0 0 3px #333333;
   -webkit-box-shadow: 0 0 3px #333333;
+  overflow: hidden;
+}
+#feed {
+  overflow: scroll;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+#feed .message {
+  min-height: 20px;
+  margin-top: 5px;
+  line-height: 20px;
+}
+#feed .message .user {
+  background: #cce;
+  padding: 2px 10px 2px 10px;
+  text-align: center;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+#feed .message .body {
+  padding: 2px 5px 2px 5px;
 }
 #login {
   border-right: none;
   border-top: none;
+  z-index: 1000;
 }
 #controls {
   position: absolute;

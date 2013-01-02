@@ -1,0 +1,6 @@
+#!/bin/sh
+
+HOME=/var/www/prod/linkfilter.net
+
+forever stop -p $HOME app.js
+

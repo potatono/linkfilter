@@ -1,0 +1,8 @@
+#!/bin/sh
+
+NODE_PATH=/usr/lib/node_modules
+HOME=/var/www/prod/linkfilter.net
+
+export NODE_PATH
+
+forever start -p $HOME -a -l $HOME/logs/app.log -o $HOME/logs/app.log -e $HOME/logs/app.log app.js
