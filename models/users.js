@@ -1,11 +1,16 @@
 var schema = require("./schema"),
 	async = require("async"),
-	bcrypt = require("bcrypt");
+	bcrypt = require("bcrypt"),
+	sloppy = require("../util/sloppy"),
+	extend = require("node.extend");
 
 var users = schema.define('users', {
 	username:		{ type: String, length: 25, index: true },
 	email:			{ type: String, length: 50, index: true },
-	password:		{ type: String, length: 50 }
+	password:		{ type: String, length: 100 },
+	source:			{ type: String, length: 20 },
+	external_id:	{ type: String, length: 20 },
+	requires_update:{ type: Boolean }
 });
 
 users.validatesPresenceOf("username", { message: "username is required" });
@@ -57,13 +62,74 @@ users.signup = function(data, cb) {
 
 		function(hash, cb) {
 			data.password = hash;
-
 			users.create(data,cb);
 		}
 	],
 
 	cb);
 };
+
+
+// Used by 3rd party auth
+users.xauth = function(data, cb) {
+	async.waterfall([
+		// Try to find a user with this external source and id.
+		function(cb) {
+			users.all({ 'where': { 'source': data.source, 'external_id': data.external_id } }, cb);
+		},
+
+		function(results, cb) {
+			// If there are no results try to add the user
+			if (!results || results.length == 0) {
+				data.requires_update = true;
+				users.signup(data, function(err, user) {
+					// If we got a name conflict just randomize and try again.
+					if (err == "Error: Validation error") {
+						if (sloppy.get(user,"user.errors.username[0]") == "username is not unique") {
+							data.username = data.username + Math.floor(Math.random()*1000);
+							users.xauth(data, cb);
+							return;
+						}
+						else if (sloppy.get(user,"user.errors.email[0]") == "email is not unique") {
+							var parts = data.email.split(/@/);
+							data.email = parts[0] + '+' + Math.floor(Math.random()*1000) + '@' + parts[1];
+							users.xauth(data,cb);
+							return;
+						}
+						else {
+							cb(err,users.errors);
+						}
+					}
+					else {
+						cb(err,user);
+					}
+				});
+			}
+			// Otherwise we're done
+			else {
+				cb(null, results[0]);
+			}
+		}
+	], cb);
+};
+
+users.update = function(id, data, cb) {
+	async.waterfall([
+		function(cb) {
+			users.find(id, cb);	
+		},
+
+		function(user, cb) {
+			console.log(user);
+			console.log(data);
+			sloppy.extend(user, data);
+			console.log(user);
+			user.save(cb);
+		}
+	],
+
+	cb);
+}
 
 module.exports = users;
 

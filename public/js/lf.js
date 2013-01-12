@@ -37,6 +37,11 @@ var LF = (function() {
 				.append('&nbsp;<span class="caret" />')
 				.attr('data-target','')
 				.dropdown();
+
+			if (u.requires_update) {
+				$('#modal h3').text('Welcome!  Please update your profile.');
+				$('#modal').modal({ remote:'/login/edit', show:true });
+			}
 		}
 	};
 

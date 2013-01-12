@@ -11,7 +11,8 @@ var config = require('./config')
   , http = require('http')
   , path = require('path')
   , auth = require('connect-auth')
-  , io = require('socket.io').listen(8080);
+  , io = require('socket.io').listen(8080)
+  , MySQLSessionStore = require('connect-mysql-session')(express);
 
 var app = express();
 
@@ -23,7 +24,6 @@ io.sockets.on('connection',function(socket) {
 	});
 });
 
-
 app.configure(function() {
 	app.set('port', process.env.PORT || config.app.port || 3000);
 	app.set('views', __dirname + '/views');
@@ -33,7 +33,10 @@ app.configure(function() {
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(express.cookieParser(config.app.cookieSecret));
-	app.use(express.session());
+	app.use(express.session({ 
+		store: new MySQLSessionStore(config.db.database, config.db.username, config.db.password, {}),
+		secret: config.app.cookieSecret 
+	}));
 	app.use(auth({
 		strategies: [ 
 			auth.Anonymous(),
@@ -56,6 +59,8 @@ app.get('/users', user.list);
 app.get('/login', login.index);
 app.post('/login/signup', login.signup);
 app.post('/login/signin', login.signin);
+app.get('/login/edit', login.edit);
+app.post('/login/edit', login.edit);
 app.get('/login/facebook', login.facebook);
 app.get('/login/twitter', login.twitter);
 app.get('/login/check-username/:username', login.checkUsername);

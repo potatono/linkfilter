@@ -2,5 +2,6 @@
 
 HOME=/var/www/prod/linkfilter.net
 
-forever stop -p $HOME app.js
+#forever stop -p $HOME app.js
+echo "Using supervisor now.. Need to kill manually."
 

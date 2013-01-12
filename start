@@ -5,4 +5,6 @@ HOME=/var/www/prod/linkfilter.net
 
 export NODE_PATH
 
-forever start -p $HOME -a -l $HOME/logs/app.log -o $HOME/logs/app.log -e $HOME/logs/app.log app.js
+#forever start -p $HOME -a -l $HOME/logs/app.log -o $HOME/logs/app.log -e $HOME/logs/app.log app.js
+nohup supervisor app.js 2>&1 >$HOME/logs/app.log &
+
