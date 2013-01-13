@@ -37,7 +37,7 @@
 		<script src="/js/socket.io.js"></script>
 		<script src="/js/lf.js"></script>
 		<script>
-			LF.setUser({{& user }});
+			LF.setUser({{& user }},"{{ sid }}");
 		</script>
 	</body>
 </html>

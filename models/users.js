@@ -1,8 +1,7 @@
 var schema = require("./schema"),
 	async = require("async"),
 	bcrypt = require("bcrypt"),
-	sloppy = require("../util/sloppy"),
-	extend = require("node.extend");
+	sloppy = require("../util/sloppy");
 
 var users = schema.define('users', {
 	username:		{ type: String, length: 25, index: true },

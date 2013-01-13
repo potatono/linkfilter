@@ -12,15 +12,33 @@ var config = require('./config')
   , path = require('path')
   , auth = require('connect-auth')
   , io = require('socket.io').listen(8080)
-  , MySQLSessionStore = require('connect-mysql-session')(express);
+  , MySQLSessionStore = require('connect-mysql-session')(express)
+  , messages = require('./models/messages');
 
 var app = express();
+var sessionStore = new MySQLSessionStore(config.db.database, config.db.username, config.db.password, {});
 
 io.sockets.on('connection',function(socket) {
-	socket.on('message', function(data) {
-		console.log("Received");
-		console.log(data);
-		socket.broadcast.emit('message', data);
+	socket.on('message', function(body) {
+		var user = socket.session.user;
+		messages.create({ body:body, username:user.username, user_id:user.id, to_user_id:0 });
+		socket.broadcast.emit('message', { username:user.username, body:body });
+	});
+
+	socket.on('session', function(sid) {
+		sessionStore.get(sid, function(err, session) {
+			if (err) {
+				console.log("ERROR: " + err);
+			}
+			else {
+				socket.session = { user:session.auth.user };
+			}
+		});
+	});
+
+	messages.last(100, 0, function(err, rows) {
+		if (!err) 
+			socket.emit('messages', rows.reverse());
 	});
 });
 
@@ -34,7 +52,7 @@ app.configure(function() {
 	app.use(express.methodOverride());
 	app.use(express.cookieParser(config.app.cookieSecret));
 	app.use(express.session({ 
-		store: new MySQLSessionStore(config.db.database, config.db.username, config.db.password, {}),
+		store: sessionStore, 
 		secret: config.app.cookieSecret 
 	}));
 	app.use(auth({

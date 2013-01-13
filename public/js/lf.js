@@ -6,7 +6,7 @@ var LF = (function() {
 	function inputReceived() {
 		var msg = $(this).val();
 		$(this).val('');
-		socket.emit('message', {'user':user.username, 'body':msg});
+		socket.emit('message', msg);
 		receiveMessage(user.username, msg);
 	};
 
@@ -23,12 +23,17 @@ var LF = (function() {
 		$('#feed').height($('#main').height()-55);
 	};
 
-	socket.on('message', function(data) {
-		console.log(data.user + " said " + data.body);
-		receiveMessage(data.user, data.body);
+	socket.on('message', function(message) {
+		receiveMessage(message.username, message.body);
 	});
 
-	self.setUser = function(u) {
+	socket.on('messages', function(messages) {
+		messages.forEach(function(message) { 
+			receiveMessage(message.username, message.body);
+		});
+	});
+
+	self.setUser = function(u,s) {
 		if (u) {
 			user = u;
 			$('#login').text(u.username)
@@ -42,6 +47,9 @@ var LF = (function() {
 				$('#modal h3').text('Welcome!  Please update your profile.');
 				$('#modal').modal({ remote:'/login/edit', show:true });
 			}
+
+			console.log("Sending session " + s);
+			socket.emit('session', s);
 		}
 	};
 
