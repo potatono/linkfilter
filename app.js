@@ -13,7 +13,8 @@ var config = require('./config')
   , auth = require('connect-auth')
   , io = require('socket.io').listen(8080)
   , MySQLSessionStore = require('connect-mysql-session')(express)
-  , messages = require('./models/messages');
+  , messages = require('./models/messages')
+  , sloppy = require('./util/sloppy')
 
 var app = express();
 var sessionStore = new MySQLSessionStore(config.db.database, config.db.username, config.db.password, {});
@@ -21,8 +22,17 @@ var sessionStore = new MySQLSessionStore(config.db.database, config.db.username,
 io.sockets.on('connection',function(socket) {
 	socket.on('message', function(body) {
 		var user = socket.session.user;
-		messages.create({ body:body, username:user.username, user_id:user.id, to_user_id:0 });
-		socket.broadcast.emit('message', { username:user.username, body:body });
+
+		messages.create(
+			{ body:body, username:user.username, user_id:user.id, to_user_id:0 }, 
+
+			function(err,message) {
+				if (!err) {
+					socket.broadcast.emit('message', message);
+					socket.emit('message',message);
+				}
+			}
+		);
 	});
 
 	socket.on('session', function(sid) {
@@ -40,6 +50,8 @@ io.sockets.on('connection',function(socket) {
 		if (!err) 
 			socket.emit('messages', rows.reverse());
 	});
+
+	socket.session = { user: { id:0, username:'anon'+Math.floor(Math.random()*10000) } };
 });
 
 app.configure(function() {

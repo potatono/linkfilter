@@ -20,6 +20,8 @@
 	"nodeunit": "*",
 	"redis": "*",
 	"async": "*",
-	"bcrypt": "*"
+	"bcrypt": "*",
+	"scraper": "*",
+	"blindparser": "*"
   }
 }

@@ -2,35 +2,33 @@ var LF = (function() {
 	var self = {};
 	var user = { username: 'anon' + Math.floor(Math.random()*100000) };
 	var socket = io.connect('http://linkfilter.net:8080');
+	var lastId = 0;
 
 	function inputReceived() {
 		var msg = $(this).val();
 		$(this).val('');
 		socket.emit('message', msg);
-		receiveMessage(user.username, msg);
 	};
 
-	function receiveMessage(user, body) {
-		$('#feed').append('<div class="message"><span class="user">' + user + 
-			'</span><span class="body">' + 
-			$('<div />').text(body).html() + 
-			'</span>'
-		);
-		$('#feed').animate({ scrollTop: $('#feed').prop("scrollHeight") }, 500);
+	function receiveMessage(message) {
+		if (message.id > lastId) {
+			lastId = message.id;
+			$('#feed').append('<div class="message"><span class="user">' + message.username + 
+				'</span><span class="body">' + 
+				$('<div />').text(message.body).html() + 
+				'</span>'
+			);
+			$('#feed').animate({ scrollTop: $('#feed').prop("scrollHeight") }, 500);
+		}
 	};
 
 	function resizeFeed() {
 		$('#feed').height($('#main').height()-55);
 	};
 
-	socket.on('message', function(message) {
-		receiveMessage(message.username, message.body);
-	});
-
+	socket.on('message', receiveMessage);
 	socket.on('messages', function(messages) {
-		messages.forEach(function(message) { 
-			receiveMessage(message.username, message.body);
-		});
+		messages.forEach(receiveMessage);
 	});
 
 	self.setUser = function(u,s) {

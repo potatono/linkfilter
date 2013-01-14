@@ -1,5 +1,5 @@
 // Sloppy gets a path that may or may not exist in obj.
-function get(obj, path) {
+function get(obj, path, alt) {
 	try {
 		// Super slop, make sure we're referencing obj and not the name of whatever we passed in.
 		path = path.replace(/^\w+/,"obj");
@@ -7,8 +7,7 @@ function get(obj, path) {
 		return value;
 	}
 	catch (e) {
-		console.log("Sloppy "+path+ ": "+ e);
-		return null;
+		return typeof(alt) == "undefined" ? null : alt;
 	}
 }
 
