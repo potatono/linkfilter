@@ -15,11 +15,24 @@ var config = require('./config')
   , MySQLSessionStore = require('connect-mysql-session')(express)
   , messages = require('./models/messages')
   , sloppy = require('./util/sloppy')
+  , metafy = require('./util/metafy');
 
 var app = express();
 var sessionStore = new MySQLSessionStore(config.db.database, config.db.username, config.db.password, {});
 
 io.sockets.on('connection',function(socket) {
+	socket.on('link', function(url) {
+		metafy.page(url, function(err, data) {
+			if (err) {
+				socket.emit('error', err);
+			}
+			else {
+				console.log(data);
+				socket.emit('linkmeta', data);
+			}
+		});
+	});
+
 	socket.on('message', function(body) {
 		var user = socket.session.user;
 

@@ -4,51 +4,56 @@ var scraper = require('scraper')
 function page(url, cb) {
 	if (/^http:\/\/blip.tv\/.*-(\d+)$/.test(url)) return rss("http://blip.tv/rss/flash/"+RegExp.$1,cb);
 	if (/^http:\/\/www.reddit.com\//.test(url)) return rss(url+".rss",cb);
-
-	scraper(url, function(err, $) {
-		if (err) return cb(err, null);
-
-		var data = {
-			url: url,
-			rss: $('link[type="application/rss+xml"]').attr('href') || 
-				null,
-			type: $('meta[property="og:type"]').attr('content') || 'page',
-			title: $('meta[property="og:title"]').attr('content') || 
-				$('title').text() ||
-				null,
-			description: $('meta[property="og:description"]').attr('content') ||
-				$('meta[name="description"]').attr('content') ||
-				null,
-			image: $('meta[property="og:image"]').attr('content') ||
-				$('meta[name="twitter:image"]').attr('value') ||
-				null
-		};
-
-		var video = $('meta[property="og:video"]').attr('content') ||
-			$('meta[name="twitter:player"]').attr('value');
-
-		if (video) {
-			data.type = "video";
-			data.video = { 
-				url: video,
-				type: $('meta[property="og:video:type"]').attr('content') || null,
-				duration: $('meta[property="video:duration"]').attr('content') || null,
-				width: $('meta[property="og:video:width"]').attr('content') ||
-					$('meta[name="twitter:player:width"]').attr('value') ||
+	
+	try {
+		scraper(url, function(err, $) {
+			if (err) return cb(err, null);
+			var data = {
+				url: url,
+				rss: $('link[type="application/rss+xml"]').attr('href') || 
 					null,
-				height: $('meta[property="og:video:width"]').attr('content') ||
-					$('meta[name="twitter:player:height"]').attr('value') ||
+				type: $('meta[property="og:type"]').attr('content') || 'page',
+				title: $('meta[property="og:title"]').attr('content') || 
+					$('title').text() ||
+					null,
+				description: $('meta[property="og:description"]').attr('content') ||
+					$('meta[name="description"]').attr('content') ||
+					null,
+				image: $('meta[property="og:image"]').attr('content') ||
+					$('meta[name="twitter:image"]').attr('value') ||
 					null
 			};
-		}
+	
+			var video = $('meta[property="og:video"]').attr('content') ||
+				$('meta[name="twitter:player"]').attr('value');
+	
+			if (video) {
+				data.type = "video";
+				data.video = { 
+					url: video,
+					type: $('meta[property="og:video:type"]').attr('content') || null,
+						duration: $('meta[property="video:duration"]').attr('content') || null,
+					width: $('meta[property="og:video:width"]').attr('content') ||
+						$('meta[name="twitter:player:width"]').attr('value') ||
+						null,
+					height: $('meta[property="og:video:width"]').attr('content') ||
+						$('meta[name="twitter:player:height"]').attr('value') ||
+						null
+				};
+			}
 
-		if (data.rss && (!data.image || !data.title || !data.description)) {
-			console.log("Didn't get much data. Digging deeper using rss.");
-			rss(data.rss, cb);
-		}
+			if (data.rss && (!data.image || !data.title || !data.description)) {
+				console.log("Didn't get much data. Digging deeper using rss.");
+				rss(data.rss, cb);
+			}
 
-		cb(null, data);
-	});
+			cb(null, data);
+		});
+	}
+	catch (e) {
+		console.log("Caught exception " + e);
+		cb(e,null);
+	}
 }
 
 function rss(url, cb) {

@@ -18,8 +18,8 @@ task('migrate', [], function() {
 
 desc('Build css');
 task('css', [], function(params) {
-	exec("lessc less/style.less ../public/css/style.css");
-	exec("lessc -x less/style.less ../public/css/style.min.css");
+	exec("lessc less/style.less ../public/css/style.css", { printStdout: true, printStderr: true });
+	exec("lessc -x less/style.less ../public/css/style.min.css", { printStdout: true, printStderr: true });
 });
 
 

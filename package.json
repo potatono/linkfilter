@@ -22,6 +22,7 @@
 	"async": "*",
 	"bcrypt": "*",
 	"scraper": "*",
-	"blindparser": "*"
+	"blindparser": "*",
+	"jsdom": "*"
   }
 }
