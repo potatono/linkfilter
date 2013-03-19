@@ -7,6 +7,7 @@ function get(obj, path, alt) {
 		return value;
 	}
 	catch (e) {
+		console.log(e);
 		return typeof(alt) == "undefined" ? null : alt;
 	}
 }

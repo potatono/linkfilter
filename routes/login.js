@@ -21,7 +21,7 @@ function loginWith(method, req, res, cb) {
 			}
 			else {
 				console.log(cb);
-				cb(req,res);
+				return cb(req,res);
 			}
 		}
 	});

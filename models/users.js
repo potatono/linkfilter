@@ -26,22 +26,22 @@ users.signin = function(username, password, cb) {
 
 		function(results, cb) {
 			if (!results || results.length == 0) {
-				cb("No users found matching the username " + username);
+				return cb("No users found matching the username " + username);
 			}
 			else if (results.length > 1) {
-				cb("Found more than one user matching the username " + username);
+				return cb("Found more than one user matching the username " + username);
 			}
 			else {
-				cb(null, results[0]);
+				return cb(null, results[0]);
 			}
 		},
 
 		function(user, cb) {
 			bcrypt.compare(password, user.password, function(err,result) { 
 				if (result)
-					cb(null, user);
+					return cb(null, user);
 				else
-					cb("Password does not match");
+					return cb("Password does not match");
 			});
 		}
 	], 
@@ -86,27 +86,25 @@ users.xauth = function(data, cb) {
 					if (err == "Error: Validation error") {
 						if (sloppy.get(user,"user.errors.username[0]") == "username is not unique") {
 							data.username = data.username + Math.floor(Math.random()*1000);
-							users.xauth(data, cb);
-							return;
+							return users.xauth(data, cb);
 						}
 						else if (sloppy.get(user,"user.errors.email[0]") == "email is not unique") {
 							var parts = data.email.split(/@/);
 							data.email = parts[0] + '+' + Math.floor(Math.random()*1000) + '@' + parts[1];
-							users.xauth(data,cb);
-							return;
+							return users.xauth(data,cb);
 						}
 						else {
-							cb(err,users.errors);
+							return cb(err,users.errors);
 						}
 					}
 					else {
-						cb(err,user);
+						return cb(err,user);
 					}
 				});
 			}
 			// Otherwise we're done
 			else {
-				cb(null, results[0]);
+				return cb(null, results[0]);
 			}
 		}
 	], cb);
